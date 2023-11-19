@@ -1,0 +1,13 @@
+names:
+- P
+- T
+nc: 2
+roboflow:
+  license: CC BY 4.0
+  project: airhockey-7cphv
+  url: https://universe.roboflow.com/airhockeyrobot/airhockey-7cphv/dataset/2
+  version: 2
+  workspace: airhockeyrobot
+test: ../test/images
+train: AirHockey-2/train/images
+val: AirHockey-2/valid/images

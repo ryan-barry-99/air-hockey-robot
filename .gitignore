@@ -1,0 +1,6 @@
+*.pyc
+*.jpg*
+*API_KEY*
+*.txt*
+*YOLO_NAS/*
+*pycache*
