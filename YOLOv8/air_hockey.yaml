@@ -2,5 +2,5 @@ names:
 - P
 - T
 nc: 2
-train: c:\Users\Ryan Barry\OneDrive - rit.edu\Laptop Backup\Desktop\RIT\Robot Perception\Project\air-hockey-robot\YOLOv8/AirHockey-2/train
-val: c:\Users\Ryan Barry\OneDrive - rit.edu\Laptop Backup\Desktop\RIT\Robot Perception\Project\air-hockey-robot\YOLOv8/AirHockey-2/valid
+train: c:\Users\Ryan Barry\OneDrive - rit.edu\Laptop Backup\Desktop\RIT\Robot Perception\Project\air-hockey-robot\YOLOv8/AirHockey-3/train
+val: c:\Users\Ryan Barry\OneDrive - rit.edu\Laptop Backup\Desktop\RIT\Robot Perception\Project\air-hockey-robot\YOLOv8/AirHockey-3/valid
