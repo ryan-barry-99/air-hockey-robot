@@ -20,7 +20,7 @@ class Annotate_Image:
         # Resize the image
         self.image = self.image.resize(size)
     
-    def annotate_image(self, size=[480,480]):
+    def annotate_image(self, size=[480,480], display=True):
         path = self.image_dir + self.file_df.iloc[self.image_num]["File Name"]
         # Reading an image in default mode
         self.open_and_resize_image(path, tuple(size))
@@ -74,11 +74,13 @@ class Annotate_Image:
             self.image = cv2.rectangle(self.image, start_point, end_point, color, thickness)
         # Convert BGR image to RGB for displaying with matplotlib
         image_rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-
-        plt.imshow(image_rgb)
-        plt.axis('off')
-        plt.show()
+        if display:
+            # Display the image
+            plt.imshow(image_rgb)
+            plt.axis('off')
+            plt.show()
+        return image_rgb
 
 if __name__ == "__main__":
-    ai = Annotate_Image(1000)
+    ai = Annotate_Image(100)
     ai.annotate_image([1920,1080])
