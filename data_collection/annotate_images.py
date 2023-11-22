@@ -7,12 +7,13 @@ import os
 import pandas as pd
 from PIL import Image
 
+
+HOME = os.getcwd()
+IMAGE_DIR = f"{HOME}/data_collection/training_data/"
 class Annotate_Image:
-    def __init__(self, image_num, file_name="training_labels.csv"):
-        self.home = os.getcwd() + "/data_collection"
-        self.file_df = pd.read_csv(os.path.abspath(os.path.join(self.home, file_name)))
+    def __init__(self, image_num, file_name):
+        self.file_df = pd.read_csv(os.path.abspath(file_name))
         self.image_num = image_num
-        self.image_dir = f"{self.home}/training_data/"
 
     def open_and_resize_image(self, file_path, size=(480,480)):
         # Open the image
@@ -21,7 +22,7 @@ class Annotate_Image:
         self.image = self.image.resize(size)
     
     def annotate_image(self, size=[480,480], display=True):
-        path = self.image_dir + self.file_df.iloc[self.image_num]["File Name"]
+        path = IMAGE_DIR + self.file_df.iloc[self.image_num]["File Name"]
         # Reading an image in default mode
         self.open_and_resize_image(path, tuple(size))
         self.image = cv2.cvtColor(np.array(self.image), cv2.COLOR_RGB2BGR)
@@ -82,5 +83,6 @@ class Annotate_Image:
         return image_rgb
 
 if __name__ == "__main__":
-    ai = Annotate_Image(100)
+    file_path = os.path.abspath(os.path.join(HOME, "data_collection/training_labels.csv"))
+    ai = Annotate_Image(100, file_path)
     ai.annotate_image([1920,1080])
