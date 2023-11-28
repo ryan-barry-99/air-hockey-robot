@@ -29,7 +29,9 @@ for i in range(df.shape[0]-1):
 
    elif df['Puck_cen_X'][i] > 0 and df['Puck_cen_X'][i+1] < 0:
       for j in range(prev_left, (i+1)):
-         weighted_avg = df['Puck_cen_X'][i] / (df['Puck_cen_X'][i] + df['Puck_cen_X'][i+1]) # i+1 is negative
+         weighted_avg = df['Puck_cen_X'][i] / (df['Puck_cen_X'][i] - df['Puck_cen_X'][i+1]) # i+1 is negative
+         if(weighted_avg >1):
+            print('error!')
          cross =(1-weighted_avg) * df['Puck_cen_Y'][i] + weighted_avg * df['Puck_cen_Y'][i+1]
          df['Cross_Left'][j] = cross
       prev_left = i
