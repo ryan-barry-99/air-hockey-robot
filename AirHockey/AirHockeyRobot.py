@@ -15,6 +15,7 @@ import torch
 from ultralytics import YOLO
 import numpy as np
 import multiprocessing
+from PIL import Image
 
 
 class AirHockeyRobot:
@@ -38,16 +39,22 @@ class AirHockeyRobot:
             if len(results) > 0:
                 for r in results:
                     for box in r.boxes:
-                        class_id = box.cls.cpu().numpy()[0]
-                        bbox = box.xyxy.cpu().numpy()
+                        print(box)
+                        # class_id = box.cls.cpu().numpy()[0]
+                        # bbox = box.xyxy.cpu().numpy()
 
-                        if class_id == 0:
-                            # Puck
-                            self.puck_bbox = bbox
-                        elif class_id == 1:
-                            # table
-                            self.table_bbox = bbox
-                        
+                        # if class_id == 0:
+                        #     # Puck
+                        #     self.puck_bbox = bbox
+                        # elif class_id == 1:
+                        #     # table
+                        #     self.table_bbox = bbox
+            
+            end_time = cv2.getTickCount()
+            elapsed_time = (end_time - self.camera.start_time) / cv2.getTickFrequency()
+            fps = 1 / elapsed_time
+            self.camera.start_time = end_time
+            print(fps)
             if display:
                 # try:
                 #     if self.table_bbox is not None:
@@ -84,15 +91,15 @@ class AirHockeyRobot:
                 #         image = cv2.rectangle(image, start_point, end_point, color, thickness)
                 # except:
                 #     pass
-                # end_time = cv2.getTickCount()
-                # elapsed_time = (end_time - self.camera.start_time) / cv2.getTickFrequency()
-                # fps = 1 / elapsed_time
+                end_time = cv2.getTickCount()
+                elapsed_time = (end_time - self.camera.start_time) / cv2.getTickFrequency()
+                fps = 1 / elapsed_time
 
-                # # Convert the FPS to a string and add it as text on the image
-                # fps_text = f"FPS: {fps:.2f}"
-                # cv2.putText(frame, fps_text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
+                # Convert the FPS to a string and add it as text on the image
+                fps_text = f"FPS: {fps:.2f}"
+                cv2.putText(frame, fps_text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
 
-                # self.camera.start_time = end_time
+                self.camera.start_time = end_time
                 cv2.imshow("Camera Feed", frame)
                 cv2.waitKey(1)# Calculate and display FPS as text on the image
 

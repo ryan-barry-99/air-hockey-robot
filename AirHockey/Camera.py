@@ -32,7 +32,7 @@ class Camera:
         cam.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
         cam.setInterleaved(False)
         cam.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
-        cam.setFps(30)
+        cam.setFps(60)
         # Create an output link for the ColorCamera
         xout_video = pipeline.create(dai.node.XLinkOut)
         xout_video.setStreamName("video")
