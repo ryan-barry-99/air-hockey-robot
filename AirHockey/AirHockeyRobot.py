@@ -16,6 +16,8 @@ from ultralytics import YOLO
 import numpy as np
 import multiprocessing
 from PIL import Image
+from Physics_Prediction import physics_prediction
+from LSTM_Prediction import LSTM_Prediction
 
 
 class AirHockeyRobot:
@@ -27,6 +29,11 @@ class AirHockeyRobot:
         self.arm = ArmRobot()
         self.camera = Camera()
         self.yolo = YOLO("YOLOv8_air_hockey.pt")
+        self.physics = physice_prediction()
+        self.lstm_dt = LSTM_Prediction(path="LSTM_HS80_L2_dt.pt", dt=True)
+        self.lstm = LSTM_Prediction(path="LSTM_HS80_L2.pt", dt=False)
+        self.puck_bbox = None
+        self.table_bbox = None
 
     def yolo_detect(self, display=False):
         """
@@ -39,21 +46,24 @@ class AirHockeyRobot:
             if len(results) > 0:
                 for r in results:
                     for box in r.boxes:
-                        print(box)
-                        # class_id = box.cls.cpu().numpy()[0]
-                        # bbox = box.xyxy.cpu().numpy()
-
-                        # if class_id == 0:
-                        #     # Puck
-                        #     self.puck_bbox = bbox
-                        # elif class_id == 1:
-                        #     # table
-                        #     self.table_bbox = bbox
+                        class_id = box.cls.cpu().numpy()[0]
+                        
+                        if class_id == 0:
+                            # Puck
+                            self.puck_bbox = box.xywh.cpu().numpy()
+                        elif class_id == 1:
+                            # table
+                            self.table_bbox = box.xyxy.cpu().numpy()
             
             end_time = cv2.getTickCount()
             elapsed_time = (end_time - self.camera.start_time) / cv2.getTickFrequency()
             fps = 1 / elapsed_time
             self.camera.start_time = end_time
+            
+            self.LSTM_pred = self.lstm(self.table_bbox, self.puck_bbox, elapsed_time)
+            self.PHYS_pred = self.physics(self.table_bbox, self.puck_bbox, elapsed_time)
+            
+            
             print(fps)
             if display:
                 # try:
