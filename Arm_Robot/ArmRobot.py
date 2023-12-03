@@ -41,16 +41,12 @@ class ArmRobot(ArmRobotKinematics):
         '''
         Writes the current joint angles to the servos
         '''
-        for i,joint in enumerate(self._frames):
+        for joint in self._frames:
             # Convert theta from radians to degrees
             theta_deg = degrees(joint.theta)
 
             if theta_deg > 180.0:
                 theta_deg = theta_deg - 360.0
-
-            # The servo on joint 3 is reversed    
-            if i==2:
-                theta_deg = -theta_deg
 
             # Map theta from [-135, 135] to [500, 2500] such that 0 maps to 1500
             pulse_width = ((theta_deg + 135) / 270) * 2000 + 500
