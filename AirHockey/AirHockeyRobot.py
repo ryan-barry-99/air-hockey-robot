@@ -34,8 +34,8 @@ class AirHockeyRobot:
 
         for r in results:
             for box in r.boxes:
-                class_id = box.cls.cpu().np()[0]
-                bbox = box.xyxy.cpu().np()
+                class_id = box.cls.cpu().numpy()[0]
+                bbox = box.xyxy.cpu().numpy()
 
                 if class_id == 0:
                     # Puck
