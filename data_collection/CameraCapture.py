@@ -32,7 +32,7 @@ class CameraCapture:
         cam.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
         cam.setInterleaved(False)
         cam.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
-        cam.setFps(40)
+        cam.setFps(60)
 
         # Create an output link for the ColorCamera
         xout = pipeline.create(dai.node.XLinkOut)
@@ -71,13 +71,15 @@ class CameraCapture:
 
                 if cv2.waitKey(1) == ord('q'):
                     break
+                
 
 import os
 import csv
 from datetime import datetime
 if __name__ == "__main__":
     # Instantiate the CameraCapture class with display_video, save_images , and display_FPS flags
-    camera = CameraCapture(display_video=True, save_images=True, display_FPS=True)
+    camera = CameraCapture(display_video=True, save_images=False, display_FPS=True)
     # Start the camera capture
-    camera.run()
+    while True:
+        camera.run()
     

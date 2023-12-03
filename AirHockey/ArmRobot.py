@@ -34,7 +34,7 @@ class ArmRobot(ArmRobotKinematics):
         self.link3.pin = 31
 
 
-        self.ser = serial.Serial('COM6', 115200)
+        # self.ser = serial.Serial('COM6', 115200)
 
 
     def write_servos(self):
