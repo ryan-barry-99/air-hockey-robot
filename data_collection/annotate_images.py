@@ -11,9 +11,10 @@ from PIL import Image
 HOME = os.getcwd()
 IMAGE_DIR = f"{HOME}/data_collection/training_data/"
 class Annotate_Image:
-    def __init__(self, image_num, file_name):
+    def __init__(self, image_num, file_name, image_dir=IMAGE_DIR):
         self.file_df = pd.read_csv(os.path.abspath(file_name))
         self.image_num = image_num
+        self.image_dir = image_dir
 
     def open_and_resize_image(self, file_path, size=(480,480)):
         # Open the image
@@ -21,8 +22,8 @@ class Annotate_Image:
         # Resize the image
         self.image = self.image.resize(size)
     
-    def annotate_image(self, size=[480,480], display=True):
-        path = IMAGE_DIR + self.file_df.iloc[self.image_num]["File Name"]
+    def annotate_image(self, size=[480,480], display=True, figsize=(4,4)):
+        path = self.image_dir + self.file_df.iloc[self.image_num]["File Name"]
         # Reading an image in default mode
         self.open_and_resize_image(path, tuple(size))
         self.image = cv2.cvtColor(np.array(self.image), cv2.COLOR_RGB2BGR)
@@ -74,15 +75,15 @@ class Annotate_Image:
             # Draw a rectangle with blue line borders of thickness of 2 px
             self.image = cv2.rectangle(self.image, start_point, end_point, color, thickness)
         # Convert BGR image to RGB for displaying with matplotlib
-        image_rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+        self.image_rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         if display:
             # Display the image
-            plt.imshow(image_rgb)
+            fig = plt.figure(figsize=figsize)
+            plt.imshow(self.image_rgb)
             plt.axis('off')
             plt.show()
-        return image_rgb
 
 if __name__ == "__main__":
     file_path = os.path.abspath(os.path.join(HOME, "data_collection/training_labels.csv"))
-    ai = Annotate_Image(100, file_path)
-    ai.annotate_image([1920,1080])
+    ai = Annotate_Image(10000, file_path)
+    ai.annotate_image([1920,1080], (20,10))

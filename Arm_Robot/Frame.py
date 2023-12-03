@@ -15,7 +15,7 @@ FIXED_TRANSLATION = 2
 FIXED_ROTATION = 3
 
 class Frame:
-    def __init__(self, joint_type,theta_fix=0, d=0, a=0, alpha_fix=0):
+    def __init__(self, joint_type,theta_fix=0, d=0, a=0, alpha_fix=0, min_lim=None, max_lim=None):
         """
         This module defines the frame class which represents a single frame in an arm robot.  
         It contains the joint type, length, angle and methods to move the joint.
@@ -35,12 +35,22 @@ class Frame:
         # rotate the z_n axis about the x_n+1 axis an angle of alpha_n+1 to align the 
         # z_n axis with the z_n+1 axis
         self.alpha = alpha_fix
+        # Set joint Limits
+        self.min_lim = min_lim
+        self.max_lim = max_lim
         
           
     def moveJoint(self, joint_value: float):
         """
         Changes the joint value DH parameter by the specified amount.
         """
+        if self.min_lim is not None and joint_value < self.min_lim:
+            print(f"Joint value {joint_value} is below minimum limit of {self.min_lim}.")    
+            return None
+        elif self.max_lim is not None and joint_value > self.max_lim:
+            print(f"Joint value {joint_value} is above maximum limit of {self.max_lim}.")    
+            return None
+        
         if self.joint_type == REVOLUTE:
             self.theta = joint_value % (2*np.pi) 
         elif self.joint_type == PRISMATIC:

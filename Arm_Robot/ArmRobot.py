@@ -27,7 +27,7 @@ class ArmRobot(ArmRobotKinematics):
         '''
         self.link1 = self.addFrame(joint_type=REVOLUTE, a=LINK1_LENGTH)
         self.link2 = self.addFrame(joint_type=REVOLUTE, a=LINK2_LENGTH)
-        self.link3 = self.addFrame(joint_type=REVOLUTE, a=WRIST_LENGTH)
+        self.link3 = self.addFrame(joint_type=REVOLUTE, a=WRIST_LENGTH, min_lim=-pi/2, max_lim=pi/2)
 
         self.link1.pin = 29
         self.link2.pin = 30

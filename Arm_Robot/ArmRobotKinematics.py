@@ -20,7 +20,7 @@ class ArmRobotKinematics:
         """
         self._frames = []
         
-    def addFrame(self, joint_type, theta_fix=0, d=0, a=0, alpha_fix=0):
+    def addFrame(self, joint_type, theta_fix=0, d=0, a=0, alpha_fix=0, min_lim=None, max_lim=None):
         """
         Adds a frame to the arm robot. 
  
@@ -31,7 +31,7 @@ class ArmRobotKinematics:
             a: The length of the frame. 
             alpha_fix: The fixed angle of rotation about the x axis. Default is 0. 
         """ 
-        new_frame = Frame(joint_type=joint_type, d=d, theta_fix=theta_fix, a=a, alpha_fix=alpha_fix)
+        new_frame = Frame(joint_type=joint_type, d=d, theta_fix=theta_fix, a=a, alpha_fix=alpha_fix, min_lim=min_lim, max_lim=max_lim)
         self._frames.append(new_frame)
         return new_frame
 
