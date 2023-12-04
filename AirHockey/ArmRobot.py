@@ -14,13 +14,14 @@ from ArmRobotKinematics import PRISMATIC, REVOLUTE, FIXED_TRANSLATION, FIXED_ROT
 from math import pi, degrees
 import serial
 import json
+import time
 
 
 LINK1_LENGTH = 11.25*2.54/100
 LINK2_LENGTH = 11.5*2.54/100
 WRIST_LENGTH = 1.5*2.54/100
 class ArmRobot(ArmRobotKinematics):
-    def __init__(self):
+    def __init__(self, com=None):
         super().__init__()
         '''
         Additional initialization code specific to the arm robot:
@@ -35,8 +36,9 @@ class ArmRobot(ArmRobotKinematics):
         self.link3.pin = 27
 
         self.lookup_table = json.load(open("lookup_table.json", "r"))
-
-        self.ser = serial.Serial('COM4', 115200)
+        
+        if com is not None:
+            self.ser = serial.Serial(com, 115200)
 
 
     def write_servos(self):
@@ -57,7 +59,7 @@ class ArmRobot(ArmRobotKinematics):
             self.ser.write(f"#{joint.pin}P{int(pulse_width)}\r".encode())
 
 if __name__ == "__main__":
-    arm = ArmRobot()
+    arm = ArmRobot("COM4")
     theta = 15
     y = 0.8
     y = int(42*y - 21)
@@ -74,12 +76,28 @@ if __name__ == "__main__":
         if joint_value > pi:
             joint_values[i] -= 2*pi
     print(joint_values[0]*180/pi, joint_values[1]*180/pi, joint_values[2]*180/pi)
-    arm.link1.moveJoint(-joint_values[0])
-    arm.link2.moveJoint(joint_values[1])
-    arm.link3.moveJoint(joint_values[2])
-    # arm.link1.moveJoint(17.977*pi/180)
+    #arm.link1.moveJoint(-joint_values[0])
+    #arm.link2.moveJoint(joint_values[1])
+    #arm.link3.moveJoint(joint_values[2])
+    # arm.link1.moveJoint(0)
     # arm.link2.moveJoint(0)
     # arm.link3.moveJoint(0)
+    for key, value in arm.lookup_table.items():
+        if ", 0)" not in key:
+            continue
+        if value[3] == True:
+            joint_values = value[0:3]
+            y = y*2.54/100
+            for i, joint_value in enumerate(joint_values[0:3]):
+                if joint_value > pi:
+                    joint_values[i] -= 2*pi
+            arm.link1.moveJoint(-joint_values[0])
+            arm.link2.moveJoint(joint_values[1])
+            arm.link3.moveJoint(joint_values[2])
+            arm.write_servos()
+            time.sleep(1)
+            
+    
     print(arm.forward_kinematics())
     arm.write_servos()
     # lookup = {}

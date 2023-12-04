@@ -15,12 +15,12 @@ class Physics_Prediction():
         
         xc=1
 
-        if dx >-0.0001: #slow or wrong way
+        if dx >-0.0000001: #slow or wrong way
             self.xp = x
             self.yp = y
             self.theta = 0
             self.y_puck = 0.5
-            return(0.5)
+            return 0.5, 0
 
         while(xc>0):
             if dy >0: #moving upwards
@@ -55,4 +55,4 @@ class Physics_Prediction():
 
         self.xp = x
         self.yp = y
-        return [yc, self.theta]
+        return yc, self.theta

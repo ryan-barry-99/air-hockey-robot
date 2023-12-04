@@ -18,15 +18,19 @@ import multiprocessing
 from PIL import Image
 from Physics_Prediction import Physics_Prediction
 from LSTM_Prediction import LSTM_Prediction
+import queue
 
 
 class AirHockeyRobot:
-    def __init__(self):
+    def __init__(self, com=None):
         """
         This module contains the integration of the air hockey robot's components for
         puck and table detection, tracking, and control
         """
-        self.arm = ArmRobot()
+        if com is not None:
+            self.arm = ArmRobot(com)
+        else:
+            self.arm = ArmRobot()
         self.camera = Camera()
         self.yolo = YOLO("YOLOv8_air_hockey.pt")
         self.physics = Physics_Prediction()
@@ -64,11 +68,11 @@ class AirHockeyRobot:
             self.camera.start_time = end_time
             if self.puck_bbox is not None and self.table_bbox is not None:
                 self.LSTM_pred = self.lstm.__getitem__(self.table_bbox, self.puck_bbox, elapsed_time)
-                print(self.physics.__getitem__(self.table_bbox, self.puck_bbox, elapsed_time))
+                #print("Physics", self.physics.__getitem__(self.table_bbox, self.puck_bbox, elapsed_time))
                 self.PHYS_pred = self.physics.__getitem__(self.table_bbox, self.puck_bbox, elapsed_time)
+                #print("Physics", self.PHYS_pred)
             
-            
-            print(fps)
+
             if display:
                 try:
                     if self.table_bbox is not None:
@@ -126,28 +130,41 @@ def find_closest_value(dictionary):
     return closest_value
 
 if __name__ == "__main__":
-    robot = AirHockeyRobot()
-    robot.PHYS_pred = None
+    robot = AirHockeyRobot("COM4")
+    robot.PHYS_pred = (0.4, 0)
+    y_queue = queue.Queue()
+    for i in range(3):
+        y_queue.put(0.5)
+        
     while True:
         robot.yolo_detect(display=True)
         if robot.PHYS_pred == None:
             continue
-        Phys_ret = robot.PHYS_pred
-        theta = robot.physics.theta
-        y = robot.physics.y_puck
-        y = int((42*y - 21)*2.54/100)
+        #yr, theta = robot.PHYS_pred
+        theta = 0
+        yr = robot.LSTM_pred
+        y_queue.get()
+        y_queue.put(yr)
+        y = sum(list(y_queue.queue))/5
+        
+        print("y = ",y)
+        #theta = robot.physics.theta
+        #y = robot.physics.y_puck
+        y = int(42*y - 21)
         if y < -13:
             y = -13
         elif y > 13:
             y = 13
         theta = int((theta // 5) * 5)
-        joint_angles = ltbl[f"({y}, {theta})"]
+        print("Physics", robot.PHYS_pred)
+        print(f"looking for ({y}, {0})")
+        joint_angles = robot.arm.lookup_table[f"({y}, {0})"]
         
         if not joint_angles[3]:
             joint_angles = find_closest_value(robot.arm.lookup_table)
         # print("closest joint angles with fourth element True:", closest_joint_angles)
     
-        robot.arm.link1.moveJoint(joint_angles[0])
+        robot.arm.link1.moveJoint(-joint_angles[0])
         robot.arm.link2.moveJoint(joint_angles[1])
         robot.arm.link3.moveJoint(joint_angles[2])
         robot.arm.write_servos()
