@@ -26,8 +26,8 @@ class ArmRobot(ArmRobotKinematics):
         Additional initialization code specific to the arm robot:
         This is where you will define the configuration of your robot with the addFrame method
         '''
-        self.link1 = self.addFrame(joint_type=REVOLUTE, a=LINK1_LENGTH)
-        self.link2 = self.addFrame(joint_type=REVOLUTE, a=LINK2_LENGTH)
+        self.link1 = self.addFrame(joint_type=REVOLUTE, a=LINK1_LENGTH, min_lim=-135*pi/180, max_lim=135*pi/180)
+        self.link2 = self.addFrame(joint_type=REVOLUTE, a=LINK2_LENGTH, min_lim=-135*pi/180, max_lim=135*pi/180)
         self.link3 = self.addFrame(joint_type=REVOLUTE, a=WRIST_LENGTH, min_lim=-pi/2, max_lim=pi/2)
 
         self.link1.pin = 29
@@ -58,18 +58,23 @@ class ArmRobot(ArmRobotKinematics):
 
 if __name__ == "__main__":
     arm = ArmRobot()
-    print(arm.forward_kinematics())
-    arm.link1.moveJoint(0)
-    # arm.write_servos()
+    joint_values = arm.lookup_table["(-0, 0)"]
+    arm.link1.moveJoint(joint_values[1])
+    arm.link2.moveJoint(joint_values[1])
+    arm.link3.moveJoint(joint_values[2])
+    # print(arm.forward_kinematics())
+    # arm.link1.moveJoint(0)
+    arm.write_servos()
     # lookup = {}
     # angle = -90
     # bar_width = 18
-    # x = -bar_width
-    # y = 13*2.54/100
-    # for x in range(-15,16):
+    # y = -bar_width
+    # x = 13*2.54/100
+    # for y in range(-17,18):
     #     for theta in range(-90,91,5):
-    #         arm.algebraic_inverse_kinematics([x*2.54/100,y],theta*pi/180)
-    #         lookup[f"{(x,theta)}"] = [arm.link1.theta, arm.link2.theta, arm.link3.theta]
-    # with open("back_lookup_table.json", "w") as json_file:
+    #         arm.algebraic_inverse_kinematics([x,y*2.54/100],theta*pi/180)
+    #         valid = arm.link1.valid and arm.link2.valid and arm.link3.valid
+    #         lookup[f"{y,theta}"] = [arm.link1.theta, arm.link2.theta, arm.link3.theta, valid]
+    # with open("lookup_table.json", "w") as json_file:
     #     json.dump(lookup, json_file, indent=4)
     

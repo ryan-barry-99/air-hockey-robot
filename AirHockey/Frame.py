@@ -45,11 +45,13 @@ class Frame:
         Changes the joint value DH parameter by the specified amount.
         """
         if self.min_lim is not None and joint_value < self.min_lim:
-            print(f"Joint value {joint_value} is below minimum limit of {self.min_lim}.")    
-            return None
+            print(f"Joint value {joint_value % (2*np.pi) } is below minimum limit of {self.min_lim}.")    
+            self.valid = False
         elif self.max_lim is not None and joint_value > self.max_lim:
-            print(f"Joint value {joint_value} is above maximum limit of {self.max_lim}.")    
-            return None
+            print(f"Joint value {joint_value % (2*np.pi) } is above maximum limit of {self.max_lim}.")    
+            self.valid = False
+        else:
+            self.valid = True
         
         if self.joint_type == REVOLUTE:
             self.theta = joint_value % (2*np.pi) 

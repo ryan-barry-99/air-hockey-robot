@@ -116,6 +116,15 @@ class AirHockeyRobot:
                 cv2.waitKey(1)# Calculate and display FPS as text on the image
 
     
+def find_closest_value(dictionary):
+    true_values = []
+    for key, value in dictionary.items():
+        if value[3] == True:
+            true_values.append(value)
+    
+    closest_value = min(true_values, key=lambda x: abs(x[0]))
+    return closest_value
+
 if __name__ == "__main__":
     robot = AirHockeyRobot()
     robot.PHYS_pred = None
@@ -125,15 +134,19 @@ if __name__ == "__main__":
             continue
         Phys_ret = robot.PHYS_pred
         theta = robot.physics.theta
-        x = robot.physics.y_puck
-        x = int(42*x*2.54/100) - 21
-        if x < -15:
-            x = -15
-        elif x > 15:
-            x = 15
+        y = robot.physics.y_puck
+        y = int((42*y - 21)*2.54/100)
+        if y < -13:
+            y = -13
+        elif y > 13:
+            y = 13
         theta = int((theta // 5) * 5)
-        joint_angles = robot.arm.lookup_table[f"({x}, {theta})"]
-        print("joint angles", joint_angles)
+        joint_angles = ltbl[f"({y}, {theta})"]
+        
+        if not joint_angles[3]:
+            joint_angles = find_closest_value(robot.arm.lookup_table)
+        # print("closest joint angles with fourth element True:", closest_joint_angles)
+    
         robot.arm.link1.moveJoint(joint_angles[0])
         robot.arm.link2.moveJoint(joint_angles[1])
         robot.arm.link3.moveJoint(joint_angles[2])
