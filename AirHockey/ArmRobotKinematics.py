@@ -88,6 +88,10 @@ class ArmRobotKinematics:
         print(f'theta1: {theta1}')
         print(f'theta2: {theta2}')
         print(f'theta3: {theta3}')
+        for theta in [theta1, theta2, theta3]:
+            if theta > pi:
+                theta = theta - 2*pi
+                print(theta)
         self.link1.moveJoint(theta1)
         self.link2.moveJoint(theta2)
         self.link3.moveJoint(theta3)

@@ -30,9 +30,9 @@ class ArmRobot(ArmRobotKinematics):
         self.link2 = self.addFrame(joint_type=REVOLUTE, a=LINK2_LENGTH, min_lim=-135*pi/180, max_lim=135*pi/180)
         self.link3 = self.addFrame(joint_type=REVOLUTE, a=WRIST_LENGTH, min_lim=-pi/2, max_lim=pi/2)
 
-        self.link1.pin = 29
-        self.link2.pin = 27
-        self.link3.pin = 30
+        self.link1.pin = 30
+        self.link2.pin = 29
+        self.link3.pin = 27
 
         self.lookup_table = json.load(open("lookup_table.json", "r"))
 
@@ -58,20 +58,37 @@ class ArmRobot(ArmRobotKinematics):
 
 if __name__ == "__main__":
     arm = ArmRobot()
-    joint_values = arm.lookup_table["(-0, 0)"]
-    arm.link1.moveJoint(joint_values[1])
+    theta = 15
+    y = 0.8
+    y = int(42*y - 21)
+    if y < -13:
+        y = -13
+    elif y > 13:
+        y = 13
+    print(y)
+    theta = int((theta // 5) * 5)
+    joint_values = arm.lookup_table[f"({y}, {theta})"]
+    # joint_values = arm.algebraic_inverse_kinematics([13*2.54/100, 13*2.54/100], 0)
+    y = y*2.54/100
+    for i, joint_value in enumerate(joint_values[0:3]):
+        if joint_value > pi:
+            joint_values[i] -= 2*pi
+    print(joint_values[0]*180/pi, joint_values[1]*180/pi, joint_values[2]*180/pi)
+    arm.link1.moveJoint(-joint_values[0])
     arm.link2.moveJoint(joint_values[1])
     arm.link3.moveJoint(joint_values[2])
-    # print(arm.forward_kinematics())
-    # arm.link1.moveJoint(0)
+    # arm.link1.moveJoint(17.977*pi/180)
+    # arm.link2.moveJoint(0)
+    # arm.link3.moveJoint(0)
+    print(arm.forward_kinematics())
     arm.write_servos()
     # lookup = {}
-    # angle = -90
+    # angle = -30
     # bar_width = 18
     # y = -bar_width
     # x = 13*2.54/100
     # for y in range(-17,18):
-    #     for theta in range(-90,91,5):
+    #     for theta in range(-60,61,5):
     #         arm.algebraic_inverse_kinematics([x,y*2.54/100],theta*pi/180)
     #         valid = arm.link1.valid and arm.link2.valid and arm.link3.valid
     #         lookup[f"{y,theta}"] = [arm.link1.theta, arm.link2.theta, arm.link3.theta, valid]
