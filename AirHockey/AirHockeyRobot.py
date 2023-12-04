@@ -83,7 +83,7 @@ class AirHockeyRobot:
                         # Blue color in BGR
                         color = (255, 0, 0)
                         # Line thickness of 2 px
-                        thickness = 5
+                        thickness = 2
                         # Using cv2.rectangle() method
                         # Draw a rectangle with blue line borders of thickness of 2 px
                         frame = cv2.rectangle(frame, start_point, end_point, color, thickness)
@@ -99,7 +99,7 @@ class AirHockeyRobot:
                         # Blue color in BGR
                         color = (0, 255, 0)
                         # Line thickness of 2 px
-                        thickness = 5
+                        thickness = 2
                         # Using cv2.rectangle() method
                         # Draw a rectangle with blue line borders of thickness of 2 px
                         frame = cv2.rectangle(frame, start_point, end_point, color, thickness)
