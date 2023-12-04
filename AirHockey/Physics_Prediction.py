@@ -18,6 +18,8 @@ class Physics_Prediction():
         if dx >-0.0001: #slow or wrong way
             self.xp = x
             self.yp = y
+            self.theta = 0
+            self.y_puck = 0.5
             return(0.5)
 
         while(xc>0):
@@ -46,10 +48,11 @@ class Physics_Prediction():
 
         #0=dx*t+x
         #t=-x/dx
-        theta = - np.arctan(dy/-dx) *180/np.pi
+        self.theta = - np.arctan(dy/-dx) *180/np.pi
         yc = dy*(-x/dx) + y
         yc=np.clip(yc, 0, 1)
+        self.y_puck = yc
 
         self.xp = x
         self.yp = y
-        return yc, theta
+        return [yc, self.theta]

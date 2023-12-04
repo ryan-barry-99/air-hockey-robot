@@ -30,7 +30,7 @@ class AirHockeyRobot:
         self.camera = Camera()
         self.yolo = YOLO("YOLOv8_air_hockey.pt")
         self.physics = Physics_Prediction()
-        self.lstm_dt = LSTM_Prediction(path="LSTM_HS80_L2_dt.pt", dt=True)
+        #self.lstm_dt = LSTM_Prediction(path="LSTM_HS80_L2_dt.pt", dt=True)
         self.lstm = LSTM_Prediction(path="LSTM_HS80_L2.pt", dt=False)
         self.puck_bbox = None
         self.table_bbox = None
@@ -50,18 +50,22 @@ class AirHockeyRobot:
                         
                         if class_id == 0:
                             # Puck
-                            self.puck_bbox = box.xywh.cpu().numpy()
+                            self.puck_bbox = box.xywh.cpu().numpy()[0].tolist()
+                            self.puck_bbox_xyxy = box.xyxy.cpu().numpy()[0].tolist()  
+                            #print(self.puck_bbox.type())
                         elif class_id == 1:
                             # table
-                            self.table_bbox = box.xyxy.cpu().numpy()
+                            self.table_bbox = box.xyxy.cpu().numpy()[0].tolist()
+                            #print(self.table_bbox.type())
             
             end_time = cv2.getTickCount()
             elapsed_time = (end_time - self.camera.start_time) / cv2.getTickFrequency()
             fps = 1 / elapsed_time
             self.camera.start_time = end_time
-            
-            self.LSTM_pred = self.lstm(self.table_bbox, self.puck_bbox, elapsed_time)
-            self.PHYS_pred, self.theta = self.physics(self.table_bbox, self.puck_bbox, elapsed_time)
+            if self.puck_bbox is not None and self.table_bbox is not None:
+                self.LSTM_pred = self.lstm.__getitem__(self.table_bbox, self.puck_bbox, elapsed_time)
+                print(self.physics.__getitem__(self.table_bbox, self.puck_bbox, elapsed_time))
+                self.PHYS_pred = self.physics.__getitem__(self.table_bbox, self.puck_bbox, elapsed_time)
             
             
             print(fps)
@@ -77,18 +81,18 @@ class AirHockeyRobot:
                         start_point = (x1, y1)
                         end_point = (x2, y2)
                         # Blue color in BGR
-                        color = (0, 255, 0)
+                        color = (255, 0, 0)
                         # Line thickness of 2 px
                         thickness = 5
                         # Using cv2.rectangle() method
                         # Draw a rectangle with blue line borders of thickness of 2 px
-                        image = cv2.rectangle(image, start_point, end_point, color, thickness)
+                        frame = cv2.rectangle(frame, start_point, end_point, color, thickness)
                     if self.puck_bbox is not None:
-                        bounding_box = np.array(self.table_bbox)
+                        bounding_box = np.array(self.puck_bbox_xyxy)
                         x1 = int(bounding_box[0])
                         y1 = int(bounding_box[1])
-                        x2 = int(bounding_box[0] + bounding_box[2])
-                        y2 = int(bounding_box[1] + bounding_box[3])
+                        x2 = int(bounding_box[2])
+                        y2 = int(bounding_box[3])
 
                         start_point = (x1, y1)
                         end_point = (x2, y2)
@@ -98,12 +102,10 @@ class AirHockeyRobot:
                         thickness = 5
                         # Using cv2.rectangle() method
                         # Draw a rectangle with blue line borders of thickness of 2 px
-                        image = cv2.rectangle(image, start_point, end_point, color, thickness)
+                        frame = cv2.rectangle(frame, start_point, end_point, color, thickness)
+                        print("---------------------------------------------------------------------------",start_point, end_point)
                 except:
                     pass
-                end_time = cv2.getTickCount()
-                elapsed_time = (end_time - self.camera.start_time) / cv2.getTickFrequency()
-                fps = 1 / elapsed_time
 
                 # Convert the FPS to a string and add it as text on the image
                 fps_text = f"FPS: {fps:.2f}"
@@ -116,7 +118,26 @@ class AirHockeyRobot:
     
 if __name__ == "__main__":
     robot = AirHockeyRobot()
+    robot.PHYS_pred = None
     while True:
         robot.yolo_detect(display=True)
+        if robot.PHYS_pred == None:
+            continue
+        Phys_ret = robot.PHYS_pred
+        theta = robot.physics.theta
+        x = robot.physics.y_puck
+        x = int(42*x*2.54/100) - 21
+        if x < -15:
+            x = -15
+        elif x > 15:
+            x = 15
+        theta = int((theta // 5) * 5)
+        joint_angles = robot.arm.lookup_table[f"({x}, {theta})"]
+        print("joint angles", joint_angles)
+        robot.arm.link1.moveJoint(joint_angles[0])
+        robot.arm.link2.moveJoint(joint_angles[1])
+        robot.arm.link3.moveJoint(joint_angles[2])
+        robot.arm.write_servos()
+            
     # print(robot.puck_bbox)
     # print(robot.table_bbox)

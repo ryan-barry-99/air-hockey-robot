@@ -69,6 +69,8 @@ class LSTM_Prediction():
     def __getitem__(self, table_bbox, puck_bbox, dt=0):
         #puck_x = (px-tux)/(tLx - tux)
         # (x relative to table) / size of table
+        print(table_bbox)
+        print(puck_bbox)
         puck_x = (puck_bbox[0] - table_bbox[0]) / (table_bbox[2]-table_bbox[0])
         puck_y = (puck_bbox[1] - table_bbox[1]) / (table_bbox[3]-table_bbox[1])
         self.handle_queue(puck_x, puck_y, dt)
