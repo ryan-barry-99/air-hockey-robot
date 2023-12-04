@@ -31,12 +31,12 @@ class ArmRobot(ArmRobotKinematics):
         self.link3 = self.addFrame(joint_type=REVOLUTE, a=WRIST_LENGTH, min_lim=-pi/2, max_lim=pi/2)
 
         self.link1.pin = 29
-        self.link2.pin = 30
-        self.link3.pin = 31
+        self.link2.pin = 27
+        self.link3.pin = 30
 
         self.lookup_table = json.load(open("lookup_table.json", "r"))
 
-        # self.ser = serial.Serial('COM6', 115200)
+        #self.ser = serial.Serial('COM4', 115200)
 
 
     def write_servos(self):
@@ -59,16 +59,16 @@ class ArmRobot(ArmRobotKinematics):
 if __name__ == "__main__":
     arm = ArmRobot()
     print(arm.forward_kinematics())
+    # arm.write_servos()
     lookup = {}
     angle = -90
     bar_width = 18
     x = -bar_width
-    y = 15*2.54/100
+    y = 13*2.54/100
     for x in range(-15,16):
-        for theta in range(-90,91,15):
+        for theta in range(-90,91,5):
             arm.algebraic_inverse_kinematics([x*2.54/100,y],theta*pi/180)
             lookup[f"{(x,theta)}"] = [arm.link1.theta, arm.link2.theta, arm.link3.theta]
-    with open("lookup_table.json", "w") as json_file:
+    with open("back_lookup_table.json", "w") as json_file:
         json.dump(lookup, json_file, indent=4)
     
-        

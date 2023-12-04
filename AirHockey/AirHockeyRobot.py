@@ -29,7 +29,7 @@ class AirHockeyRobot:
         self.arm = ArmRobot()
         self.camera = Camera()
         self.yolo = YOLO("YOLOv8_air_hockey.pt")
-        self.physics = physice_prediction()
+        self.physics = Physics_Prediction()
         self.lstm_dt = LSTM_Prediction(path="LSTM_HS80_L2_dt.pt", dt=True)
         self.lstm = LSTM_Prediction(path="LSTM_HS80_L2.pt", dt=False)
         self.puck_bbox = None
@@ -61,46 +61,46 @@ class AirHockeyRobot:
             self.camera.start_time = end_time
             
             self.LSTM_pred = self.lstm(self.table_bbox, self.puck_bbox, elapsed_time)
-            self.PHYS_pred = self.physics(self.table_bbox, self.puck_bbox, elapsed_time)
+            self.PHYS_pred, self.theta = self.physics(self.table_bbox, self.puck_bbox, elapsed_time)
             
             
             print(fps)
             if display:
-                # try:
-                #     if self.table_bbox is not None:
-                #         bounding_box = np.array(self.table_bbox)
-                #         x1 = int(bounding_box[0] * (1920 / 480))
-                #         y1 = int(bounding_box[1] * (1080 / 480))
-                #         x2 = int(bounding_box[2] * (1920 / 480))
-                #         y2 = int(bounding_box[3] * (1080 / 480))
+                try:
+                    if self.table_bbox is not None:
+                        bounding_box = np.array(self.table_bbox)
+                        x1 = int(bounding_box[0])
+                        y1 = int(bounding_box[1])
+                        x2 = int(bounding_box[2])
+                        y2 = int(bounding_box[3])
 
-                #         start_point = (x1, y1)
-                #         end_point = (x2, y2)
-                #         # Blue color in BGR
-                #         color = (0, 255, 0)
-                #         # Line thickness of 2 px
-                #         thickness = 5
-                #         # Using cv2.rectangle() method
-                #         # Draw a rectangle with blue line borders of thickness of 2 px
-                #         image = cv2.rectangle(image, start_point, end_point, color, thickness)
-                #     if self.puck_bbox is not None:
-                #         bounding_box = np.array(self.table_bbox)
-                #         x1 = int(bounding_box[0] * (1920 / 480))
-                #         y1 = int(bounding_box[1] * (1080 / 480))
-                #         x2 = int(bounding_box[2] * (1920 / 480))
-                #         y2 = int(bounding_box[3] * (1080 / 480))
+                        start_point = (x1, y1)
+                        end_point = (x2, y2)
+                        # Blue color in BGR
+                        color = (0, 255, 0)
+                        # Line thickness of 2 px
+                        thickness = 5
+                        # Using cv2.rectangle() method
+                        # Draw a rectangle with blue line borders of thickness of 2 px
+                        image = cv2.rectangle(image, start_point, end_point, color, thickness)
+                    if self.puck_bbox is not None:
+                        bounding_box = np.array(self.table_bbox)
+                        x1 = int(bounding_box[0])
+                        y1 = int(bounding_box[1])
+                        x2 = int(bounding_box[0] + bounding_box[2])
+                        y2 = int(bounding_box[1] + bounding_box[3])
 
-                #         start_point = (x1, y1)
-                #         end_point = (x2, y2)
-                #         # Blue color in BGR
-                #         color = (0, 255, 0)
-                #         # Line thickness of 2 px
-                #         thickness = 5
-                #         # Using cv2.rectangle() method
-                #         # Draw a rectangle with blue line borders of thickness of 2 px
-                #         image = cv2.rectangle(image, start_point, end_point, color, thickness)
-                # except:
-                #     pass
+                        start_point = (x1, y1)
+                        end_point = (x2, y2)
+                        # Blue color in BGR
+                        color = (0, 255, 0)
+                        # Line thickness of 2 px
+                        thickness = 5
+                        # Using cv2.rectangle() method
+                        # Draw a rectangle with blue line borders of thickness of 2 px
+                        image = cv2.rectangle(image, start_point, end_point, color, thickness)
+                except:
+                    pass
                 end_time = cv2.getTickCount()
                 elapsed_time = (end_time - self.camera.start_time) / cv2.getTickFrequency()
                 fps = 1 / elapsed_time
@@ -117,6 +117,6 @@ class AirHockeyRobot:
 if __name__ == "__main__":
     robot = AirHockeyRobot()
     while True:
-        robot.yolo_detect(display=False)
+        robot.yolo_detect(display=True)
     # print(robot.puck_bbox)
     # print(robot.table_bbox)

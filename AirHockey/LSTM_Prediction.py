@@ -40,7 +40,7 @@ class LSTM_Prediction():
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(self.device)
         self.model.to(self.device)
-        self.model.load_state_dict(torch.load("C:/Users/ryanb/OneDrive/Desktop/RIT/Robot_Perception/Final_Project/air-hockey-robot/AirHockey/LSTM_HS80_L2_dt.pt", map_location=torch.device(self.device)))
+        self.model.load_state_dict(torch.load("C:/Users/ryanb/OneDrive/Desktop/RIT/Robot_Perception/Final_Project/air-hockey-robot/AirHockey/LSTM_HS80_L2.pt", map_location=torch.device(self.device)))
         self.model.eval()
         self.left_queue = queue.Queue()
         self.right_queue = queue.Queue()
