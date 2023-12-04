@@ -13,6 +13,7 @@ Date Created: October 5, 2023
 from ArmRobotKinematics import PRISMATIC, REVOLUTE, FIXED_TRANSLATION, FIXED_ROTATION, ArmRobotKinematics
 from math import pi, degrees
 import serial
+import json
 
 
 LINK1_LENGTH = 11.25*2.54/100
@@ -33,6 +34,7 @@ class ArmRobot(ArmRobotKinematics):
         self.link2.pin = 30
         self.link3.pin = 31
 
+        self.lookup_table = json.load(open("lookup_table.json", "r"))
 
         # self.ser = serial.Serial('COM6', 115200)
 
@@ -54,4 +56,19 @@ class ArmRobot(ArmRobotKinematics):
             # Write the pulse width to the servo
             self.ser.write(f"#{joint.pin}P{int(pulse_width)}\r".encode())
 
-
+if __name__ == "__main__":
+    arm = ArmRobot()
+    print(arm.forward_kinematics())
+    lookup = {}
+    angle = -90
+    bar_width = 18
+    x = -bar_width
+    y = 15*2.54/100
+    for x in range(-15,16):
+        for theta in range(-90,91,15):
+            arm.algebraic_inverse_kinematics([x*2.54/100,y],theta*pi/180)
+            lookup[f"{(x,theta)}"] = [arm.link1.theta, arm.link2.theta, arm.link3.theta]
+    with open("lookup_table.json", "w") as json_file:
+        json.dump(lookup, json_file, indent=4)
+    
+        

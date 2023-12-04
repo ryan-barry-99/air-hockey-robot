@@ -46,9 +46,10 @@ class Physics_Prediction():
 
         #0=dx*t+x
         #t=-x/dx
+        theta = - np.arctan(dy/-dx) *180/np.pi
         yc = dy*(-x/dx) + y
         yc=np.clip(yc, 0, 1)
 
         self.xp = x
         self.yp = y
-        return yc
+        return yc, theta

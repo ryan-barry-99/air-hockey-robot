@@ -71,12 +71,16 @@ class ArmRobotKinematics:
         # Implement the specific inverse kinematics calculations for the arm robot
         x = target_position[0] 
         y = target_position[1]
+        
+        if target_orientation < 0:
+            target_orientation = 2*pi + target_orientation
 
         # Calculate the joint angles
         p2x = x - self.link3.a*cos(target_orientation)
         p2y = y - self.link3.a*sin(target_orientation)
         l1 = self.link1.a # Assign l1 to link 1
         l2 = self.link2.a # Assign l2 to link 2
+        print((p2x**2 + p2y**2 - l1**2 - l2**2)/(2*l1*l2))
         theta2 = round(acos((p2x**2 + p2y**2 - l1**2 - l2**2)/(2*l1*l2)),10)
         theta1 = round((atan2(p2y, p2x) - atan2(l2*sin(theta2), l1 + l2*cos(theta2))),10)
         theta3 = round((target_orientation - theta1 - theta2),10)

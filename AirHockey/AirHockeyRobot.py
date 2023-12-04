@@ -16,7 +16,7 @@ from ultralytics import YOLO
 import numpy as np
 import multiprocessing
 from PIL import Image
-from Physics_Prediction import physics_prediction
+from Physics_Prediction import Physics_Prediction
 from LSTM_Prediction import LSTM_Prediction
 
 

@@ -40,7 +40,7 @@ class LSTM_Prediction():
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(self.device)
         self.model.to(self.device)
-        self.model.load_state_dict(torch.load("./LSTM_HS80_L2_dt.pt", map_location=torch.device(self.device)))
+        self.model.load_state_dict(torch.load("C:/Users/ryanb/OneDrive/Desktop/RIT/Robot_Perception/Final_Project/air-hockey-robot/AirHockey/LSTM_HS80_L2_dt.pt", map_location=torch.device(self.device)))
         self.model.eval()
         self.left_queue = queue.Queue()
         self.right_queue = queue.Queue()
@@ -96,10 +96,13 @@ if __name__=="__main__":
     LSTM = LSTM_Prediction(path= "./LSTM_HS80_L2_dt.pt", dt = True)
     Phys = Physics_Prediction(dt = True)
     
-    table_bbox = [0.1, 0.1, 0.9, 0.9]
-    for i in range(10):
-        puck_bbox = random.random(), random.random(), random.random(), random.random()
-        dt = 0.1
-        print("Physics Prediction:", Phys.__getitem__(puck_bbox, table_bbox, dt))
-        print("LSTM Prediction:", LSTM.__getitem__(table_bbox, puck_bbox, dt))
-        print("")
+    table_bbox = [0, 0, 1, 1]
+    puck_bbox = [1, 0.5, 0.5, 0.5]
+    dt = 0.1
+    print("Physics Prediction:", Phys.__getitem__(puck_bbox, table_bbox, dt))
+    print("LSTM Prediction:", LSTM.__getitem__(table_bbox, puck_bbox, dt))
+    print("")
+    puck_bbox = [0.9, 0.39, 0.5, 0.5]
+    print("Physics Prediction:", Phys.__getitem__(puck_bbox, table_bbox, dt))
+    print("LSTM Prediction:", LSTM.__getitem__(table_bbox, puck_bbox, dt))
+    print("")
