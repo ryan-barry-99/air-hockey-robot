@@ -1,4 +1,4 @@
-# air-hockey-robot
+# Air Hockey Robot
 Welcome to the repo for our implementation of a robot that plays air hockey!
 
 This consisted of several aspects, including:
