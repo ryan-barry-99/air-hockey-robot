@@ -7,6 +7,6 @@ This consisted of several aspects, including:
  - Development of a physics model and LSTM for intercept point prediction (view dev-quinn branch)
  - Real time implementation of the above methods to play air hockey against a human (see AirHockey directory)
 
-Click here to read our paper: http://tinyurl.com/air-hockey-robot-paper
+Click here to read our paper: https://github.com/ryan-barry-99/air-hockey-robot/blob/master/Trajectory_Estimation_Approach_To_Robotic_Air_Hockey_Opponent.pdf
 
-Click here to see it in action: http://tinyurl.com/air-hockey-robot
+Click here to see it in action: https://www.linkedin.com/posts/ryanbarry99_yolov8-robotics-computervision-activity-7139831796266856448-vy6P?utm_source=share&utm_medium=member_desktop
